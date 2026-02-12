@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api';
 import { FileText, Plus, Trash2, Loader2, User, Upload, BookOpen } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
@@ -23,7 +23,7 @@ const Dashboard = () => {
 
     const fetchResumes = async (uid) => {
         try {
-            const res = await axios.get(`http://localhost:5000/api/resumes?userId=${uid}`);
+            const res = await api.get(`/api/resumes?userId=${uid}`);
             setResumes(res.data);
         } catch (error) {
             console.error("Error fetching resumes:", error);
@@ -34,7 +34,7 @@ const Dashboard = () => {
 
     const createResume = async () => {
         try {
-            const res = await axios.post('http://localhost:5000/api/resumes', {
+            const res = await api.post('/api/resumes', {
                 userId,
                 title: 'New Edition'
             });
@@ -49,7 +49,7 @@ const Dashboard = () => {
         if (!confirm("Are you sure you want to discard this document?")) return;
 
         try {
-            await axios.delete(`http://localhost:5000/api/resumes/${id}`);
+            await api.delete(`/api/resumes/${id}`);
             setResumes(resumes.filter(r => r._id !== id));
         } catch (error) {
             console.error("Error deleting resume:", error);

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PenTool, FileText, Mail, Lock, Loader2 } from 'lucide-react';
-import axios from 'axios';
+import api from '../api';
 import { toast } from 'react-hot-toast';
 
 const Home = () => {
@@ -30,10 +30,10 @@ const Home = () => {
 
         try {
             const url = isLogin
-                ? 'http://localhost:5000/api/auth/login'
-                : 'http://localhost:5000/api/auth/register';
+                ? '/api/auth/login'
+                : '/api/auth/register';
 
-            const res = await axios.post(url, formData);
+            const res = await api.post(url, formData);
 
             if (res.data) {
                 localStorage.setItem('resume_builder_token', res.data.token);

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api';
 import { Save, ArrowLeft, Wand2, Plus, Trash2, Sliders, LayoutTemplate, Minimize2, Download } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import html2pdf from 'html2pdf.js';
@@ -21,7 +21,7 @@ const Editor = () => {
     useEffect(() => {
         const fetchResume = async () => {
             try {
-                const res = await axios.get(`http://localhost:5000/api/resumes/${id}`);
+                const res = await api.get(`/api/resumes/${id}`);
                 setResume({
                     ...res.data,
                     experience: res.data.experience || [],
@@ -44,7 +44,7 @@ const Editor = () => {
     const handleSave = async (silent = false) => {
         setSaving(true);
         try {
-            await axios.put(`http://localhost:5000/api/resumes/${id}`, resume);
+            await api.put(`/api/resumes/${id}`, resume);
             if (!silent) toast.success("Draft saved successfully");
         } catch (error) {
             console.error("Error saving resume:", error);
@@ -112,7 +112,7 @@ const Editor = () => {
                 skills: resume.skills || []
             };
 
-            const res = await axios.post('http://localhost:5000/api/ai/generate-summary', payload);
+            const res = await api.post('/api/ai/generate-summary', payload);
 
             if (res.data && res.data.result) {
                 setResume(prev => ({ ...prev, summary: res.data.result }));
@@ -133,7 +133,7 @@ const Editor = () => {
         if (!text) return toast.error("Please enter some text to refine");
         const toastId = toast.loading("copy editing...");
         try {
-            const res = await axios.post('http://localhost:5000/api/ai/improve-text', {
+            const res = await api.post('/api/ai/improve-text', {
                 text,
                 type
             });
