@@ -1,0 +1,69 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    font-family: 'Old Standard TT', serif;
+    line-height: 1.5;
+    font-weight: 400;
+
+    /* Warm Grey-Brown Archive Palette */
+    --news-paper: #f0ede9;
+    /* Subtle Brown-Grey */
+    --news-card: #faf8f5;
+    /* Lite Lite Brown Card */
+    --news-silver: #dedbd7;
+    /* Silver-Grey Lead */
+    --news-ink: #111111;
+    --news-border: #999999;
+    --news-accent: #555555;
+
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background-color: var(--news-paper);
+    color: var(--news-ink);
+    width: 100%;
+    overflow-x: hidden;
+}
+
+#root {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--news-paper);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--news-silver);
+    border: 1px solid var(--news-paper);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--news-border);
+}
+
+.newspaper-columns {
+    column-count: 1;
+}
+
+@media (min-width: 768px) {
+    .newspaper-columns {
+        column-count: 2;
+        column-gap: 2rem;
+    }
+}
