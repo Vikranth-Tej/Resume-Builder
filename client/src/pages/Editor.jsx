@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../api';
-import { Save, ArrowLeft, Wand2, Plus, Trash2, Sliders, LayoutTemplate, Minimize2, Download } from 'lucide-react';
+import { Save, ArrowLeft, Wand2, Plus, Trash2, Sliders, LayoutTemplate, Minimize2, Download, Eye, EyeOff } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import html2pdf from 'html2pdf.js';
 
@@ -333,11 +333,20 @@ const Editor = () => {
                     <div className="section-container">
                         <h2 className="section-title">Education</h2>
                         {resume.education.map((edu, index) => (
-                            <div key={index} className="item-card group">
-                                <button onClick={() => removeItem('education', index)} className="delete-btn group-hover:opacity-100">
-                                    <Trash2 size={14} />
-                                </button>
-                                <div className="grid grid-cols-2 gap-3 mb-3">
+                            <div key={index} className={`item-card group ${edu.hidden ? 'opacity-60 bg-gray-50' : ''}`}>
+                                <div className="absolute top-2 right-12 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <button
+                                        onClick={() => handleArrayChange('education', index, 'hidden', !edu.hidden)}
+                                        className="p-1.5 border border-[var(--news-border)] bg-[var(--news-paper)] text-[var(--news-ink)] hover:bg-[var(--news-silver)] transition"
+                                        title={edu.hidden ? "Show in Resume" : "Hide from Resume"}
+                                    >
+                                        {edu.hidden ? <EyeOff size={14} /> : <Eye size={14} />}
+                                    </button>
+                                    <button onClick={() => removeItem('education', index)} className="p-1.5 border border-[var(--news-border)] bg-[var(--news-paper)] text-[#555] hover:text-[#b91c1c] hover:border-[#b91c1c] transition" title="Remove">
+                                        <Trash2 size={14} />
+                                    </button>
+                                </div>
+                                <div className="grid grid-cols-2 gap-3 mb-3 mt-4">
                                     <input
                                         placeholder="University/College"
                                         className="input-field font-bold"
@@ -373,7 +382,7 @@ const Editor = () => {
                                 />
                             </div>
                         ))}
-                        <button onClick={() => addItem('education', { institution: '', degree: '', startDate: '', endDate: '', description: '' })} className="add-btn">
+                        <button onClick={() => addItem('education', { institution: '', degree: '', startDate: '', endDate: '', description: '', hidden: false })} className="add-btn">
                             <Plus size={16} /> Add Institution
                         </button>
                     </div>
@@ -383,34 +392,45 @@ const Editor = () => {
                         <h2 className="section-title">Skills</h2>
                         <div className="space-y-3">
                             {resume.skills.map((skill, index) => (
-                                <div key={index} className="item-card group flex gap-4 items-end relative py-6 px-5 mb-4 border border-[var(--news-border)] bg-white shadow-sm hover:shadow-md transition">
-                                    <button onClick={() => removeItem('skills', index)} className="delete-btn group-hover:opacity-100">
-                                        <Trash2 size={16} />
-                                    </button>
-
-                                    <div className="w-1/4">
-                                        <label className="text-[10px] font-bold text-[#555] uppercase tracking-widest block mb-2">Category</label>
-                                        <input
-                                            placeholder="e.g. Technical"
-                                            className="input-field"
-                                            value={skill.level || ''}
-                                            onChange={(e) => handleArrayChange('skills', index, 'level', e.target.value)}
-                                        />
+                                <div key={index} className={`item-card group relative py-6 px-5 mb-4 border border-[var(--news-border)] bg-white shadow-sm hover:shadow-md transition ${skill.hidden ? 'opacity-60 bg-gray-50' : ''}`}>
+                                    <div className="absolute top-2 right-12 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <button
+                                            onClick={() => handleArrayChange('skills', index, 'hidden', !skill.hidden)}
+                                            className="p-1.5 border border-[var(--news-border)] bg-[var(--news-paper)] text-[var(--news-ink)] hover:bg-[var(--news-silver)] transition"
+                                            title={skill.hidden ? "Show in Resume" : "Hide from Resume"}
+                                        >
+                                            {skill.hidden ? <EyeOff size={14} /> : <Eye size={14} />}
+                                        </button>
+                                        <button onClick={() => removeItem('skills', index)} className="p-1.5 border border-[var(--news-border)] bg-[var(--news-paper)] text-[#555] hover:text-[#b91c1c] hover:border-[#b91c1c] transition" title="Remove">
+                                            <Trash2 size={16} />
+                                        </button>
                                     </div>
 
-                                    <div className="flex-1">
-                                        <label className="text-[10px] font-bold text-[#555] uppercase tracking-widest block mb-2">Skills List</label>
-                                        <input
-                                            placeholder="Enter skills separated by commas..."
-                                            className="input-field"
-                                            value={skill.name || ''}
-                                            onChange={(e) => handleArrayChange('skills', index, 'name', e.target.value)}
-                                        />
+                                    <div className="space-y-4">
+                                        <div>
+                                            <label className="text-[10px] font-bold text-[#555] uppercase tracking-widest block mb-2">Category</label>
+                                            <input
+                                                placeholder="e.g. Technical"
+                                                className="input-field"
+                                                value={skill.level || ''}
+                                                onChange={(e) => handleArrayChange('skills', index, 'level', e.target.value)}
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="text-[10px] font-bold text-[#555] uppercase tracking-widest block mb-2">Skills List</label>
+                                            <input
+                                                placeholder="Enter skills separated by commas..."
+                                                className="input-field"
+                                                value={skill.name || ''}
+                                                onChange={(e) => handleArrayChange('skills', index, 'name', e.target.value)}
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             ))}
                         </div>
-                        <button onClick={() => addItem('skills', { name: '', level: 'Technical' })} className="add-btn mt-4">
+                        <button onClick={() => addItem('skills', { name: '', level: 'Technical', hidden: false })} className="add-btn mt-4">
                             <Plus size={16} /> Add Skill Set
                         </button>
                     </div>
@@ -419,11 +439,20 @@ const Editor = () => {
                     <div className="section-container">
                         <h2 className="section-title">Experience</h2>
                         {resume.experience.map((exp, index) => (
-                            <div key={index} className="item-card group">
-                                <button onClick={() => removeItem('experience', index)} className="delete-btn group-hover:opacity-100">
-                                    <Trash2 size={14} />
-                                </button>
-                                <div className="grid grid-cols-2 gap-3 mb-3">
+                            <div key={index} className={`item-card group ${exp.hidden ? 'opacity-60 bg-gray-50' : ''}`}>
+                                <div className="absolute top-2 right-12 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <button
+                                        onClick={() => handleArrayChange('experience', index, 'hidden', !exp.hidden)}
+                                        className="p-1.5 border border-[var(--news-border)] bg-[var(--news-paper)] text-[var(--news-ink)] hover:bg-[var(--news-silver)] transition"
+                                        title={exp.hidden ? "Show in Resume" : "Hide from Resume"}
+                                    >
+                                        {exp.hidden ? <EyeOff size={14} /> : <Eye size={14} />}
+                                    </button>
+                                    <button onClick={() => removeItem('experience', index)} className="p-1.5 border border-[var(--news-border)] bg-[var(--news-paper)] text-[#555] hover:text-[#b91c1c] hover:border-[#b91c1c] transition" title="Remove">
+                                        <Trash2 size={14} />
+                                    </button>
+                                </div>
+                                <div className="grid grid-cols-2 gap-3 mb-3 mt-4">
                                     <input
                                         placeholder="Company Name"
                                         className="input-field font-bold"
@@ -471,7 +500,7 @@ const Editor = () => {
                                 </div>
                             </div>
                         ))}
-                        <button onClick={() => addItem('experience', { company: '', position: '', startDate: '', endDate: '', description: '' })} className="add-btn">
+                        <button onClick={() => addItem('experience', { company: '', position: '', startDate: '', endDate: '', description: '', hidden: false })} className="add-btn">
                             <Plus size={16} /> Add Experience
                         </button>
                     </div>
@@ -480,11 +509,20 @@ const Editor = () => {
                     <div className="section-container">
                         <h2 className="section-title">Projects</h2>
                         {resume.projects.map((proj, index) => (
-                            <div key={index} className="item-card group">
-                                <button onClick={() => removeItem('projects', index)} className="delete-btn group-hover:opacity-100">
-                                    <Trash2 size={14} />
-                                </button>
-                                <div className="grid grid-cols-2 gap-3 mb-3">
+                            <div key={index} className={`item-card group ${proj.hidden ? 'opacity-60 bg-gray-50' : ''}`}>
+                                <div className="absolute top-2 right-12 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <button
+                                        onClick={() => handleArrayChange('projects', index, 'hidden', !proj.hidden)}
+                                        className="p-1.5 border border-[var(--news-border)] bg-[var(--news-paper)] text-[var(--news-ink)] hover:bg-[var(--news-silver)] transition"
+                                        title={proj.hidden ? "Show in Resume" : "Hide from Resume"}
+                                    >
+                                        {proj.hidden ? <EyeOff size={14} /> : <Eye size={14} />}
+                                    </button>
+                                    <button onClick={() => removeItem('projects', index)} className="p-1.5 border border-[var(--news-border)] bg-[var(--news-paper)] text-[#555] hover:text-[#b91c1c] hover:border-[#b91c1c] transition" title="Remove">
+                                        <Trash2 size={14} />
+                                    </button>
+                                </div>
+                                <div className="grid grid-cols-2 gap-3 mb-3 mt-4">
                                     <input
                                         placeholder="Project Name"
                                         className="input-field font-bold"
@@ -524,7 +562,7 @@ const Editor = () => {
                                 </div>
                             </div>
                         ))}
-                        <button onClick={() => addItem('projects', { name: '', description: '', technologies: '', link: '' })} className="add-btn">
+                        <button onClick={() => addItem('projects', { name: '', description: '', technologies: '', link: '', hidden: false })} className="add-btn">
                             <Plus size={16} /> Add Project
                         </button>
                     </div>
@@ -533,11 +571,20 @@ const Editor = () => {
                     <div className="section-container">
                         <h2 className="section-title">Positions of Responsibility</h2>
                         {resume.responsibilities?.map((resp, index) => (
-                            <div key={index} className="item-card group">
-                                <button onClick={() => removeItem('responsibilities', index)} className="delete-btn group-hover:opacity-100">
-                                    <Trash2 size={14} />
-                                </button>
-                                <div className="grid grid-cols-2 gap-3 mb-3">
+                            <div key={index} className={`item-card group ${resp.hidden ? 'opacity-60 bg-gray-50' : ''}`}>
+                                <div className="absolute top-2 right-12 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <button
+                                        onClick={() => handleArrayChange('responsibilities', index, 'hidden', !resp.hidden)}
+                                        className="p-1.5 border border-[var(--news-border)] bg-[var(--news-paper)] text-[var(--news-ink)] hover:bg-[var(--news-silver)] transition"
+                                        title={resp.hidden ? "Show in Resume" : "Hide from Resume"}
+                                    >
+                                        {resp.hidden ? <EyeOff size={14} /> : <Eye size={14} />}
+                                    </button>
+                                    <button onClick={() => removeItem('responsibilities', index)} className="p-1.5 border border-[var(--news-border)] bg-[var(--news-paper)] text-[#555] hover:text-[#b91c1c] hover:border-[#b91c1c] transition" title="Remove">
+                                        <Trash2 size={14} />
+                                    </button>
+                                </div>
+                                <div className="grid grid-cols-2 gap-3 mb-3 mt-4">
                                     <input
                                         placeholder="Role/Position"
                                         className="input-field font-bold"
@@ -585,7 +632,7 @@ const Editor = () => {
                                 </div>
                             </div>
                         ))}
-                        <button onClick={() => addItem('responsibilities', { role: '', organization: '', startDate: '', endDate: '', description: '' })} className="add-btn">
+                        <button onClick={() => addItem('responsibilities', { role: '', organization: '', startDate: '', endDate: '', description: '', hidden: false })} className="add-btn">
                             <Plus size={16} /> Add Responsibility
                         </button>
                     </div>
@@ -594,11 +641,20 @@ const Editor = () => {
                     <div className="section-container">
                         <h2 className="section-title">Achievements</h2>
                         {resume.achievements?.map((ach, index) => (
-                            <div key={index} className="item-card group">
-                                <button onClick={() => removeItem('achievements', index)} className="delete-btn group-hover:opacity-100">
-                                    <Trash2 size={14} />
-                                </button>
-                                <div className="grid grid-cols-2 gap-3 mb-3">
+                            <div key={index} className={`item-card group ${ach.hidden ? 'opacity-60 bg-gray-50' : ''}`}>
+                                <div className="absolute top-2 right-12 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <button
+                                        onClick={() => handleArrayChange('achievements', index, 'hidden', !ach.hidden)}
+                                        className="p-1.5 border border-[var(--news-border)] bg-[var(--news-paper)] text-[var(--news-ink)] hover:bg-[var(--news-silver)] transition"
+                                        title={ach.hidden ? "Show in Resume" : "Hide from Resume"}
+                                    >
+                                        {ach.hidden ? <EyeOff size={14} /> : <Eye size={14} />}
+                                    </button>
+                                    <button onClick={() => removeItem('achievements', index)} className="p-1.5 border border-[var(--news-border)] bg-[var(--news-paper)] text-[#555] hover:text-[#b91c1c] hover:border-[#b91c1c] transition" title="Remove">
+                                        <Trash2 size={14} />
+                                    </button>
+                                </div>
+                                <div className="grid grid-cols-2 gap-3 mb-3 mt-4">
                                     <input
                                         placeholder="Title/Honor"
                                         className="input-field font-bold"
@@ -621,7 +677,7 @@ const Editor = () => {
                                 />
                             </div>
                         ))}
-                        <button onClick={() => addItem('achievements', { title: '', date: '', description: '' })} className="add-btn">
+                        <button onClick={() => addItem('achievements', { title: '', date: '', description: '', hidden: false })} className="add-btn">
                             <Plus size={16} /> Add Achievement
                         </button>
                     </div>
@@ -669,10 +725,10 @@ const Editor = () => {
                     )}
 
                     {/* Education */}
-                    {resume.education?.length > 0 && (
+                    {resume.education?.filter(edu => !edu.hidden).length > 0 && (
                         <div style={{ marginBottom: `${sectionSpacing}rem` }}>
                             <h3 className="section-header">Education</h3>
-                            {resume.education.map((edu, i) => (
+                            {resume.education.filter(edu => !edu.hidden).map((edu, i) => (
                                 <div key={i} className="mb-2">
                                     <div className="flex justify-between items-baseline">
                                         <div className="font-bold font-serif" style={{ fontSize: '1.1em' }}>{edu.institution}</div>
@@ -689,14 +745,14 @@ const Editor = () => {
                     )}
 
                     {/* Skills */}
-                    {resume.skills?.length > 0 && (
+                    {resume.skills?.filter(skill => !skill.hidden).length > 0 && (
                         <div style={{ marginBottom: `${sectionSpacing}rem` }}>
                             <h3 className="section-header">SKILLS</h3>
-                            <div className="flex flex-wrap gap-2">
-                                {resume.skills.map((skill, i) => (
-                                    <div key={i} className="flex gap-2 items-baseline">
-                                        <span className="font-bold whitespace-nowrap text-[0.55em]">{skill.level}:</span>
-                                        <span className="text-gray-800 text-[0.55em]">{skill.name}</span>
+                            <div className="flex flex-col gap-2">
+                                {resume.skills.filter(skill => !skill.hidden).map((skill, i) => (
+                                    <div key={i} className="flex flex-col">
+                                        <div className="font-bold font-serif" style={{ fontSize: '1.0em' }}>{skill.level}</div>
+                                        <div className="text-gray-800 font-serif" style={{ fontSize: '0.9em' }}>{skill.name}</div>
                                     </div>
                                 ))}
                             </div>
@@ -707,7 +763,7 @@ const Editor = () => {
                     {resume.experience?.length > 0 && (
                         <div style={{ marginBottom: `${sectionSpacing}rem` }}>
                             <h3 className="section-header">EXPERIENCE</h3>
-                            {resume.experience.map((exp, i) => (
+                            {resume.experience.filter(exp => !exp.hidden).map((exp, i) => (
                                 <div key={i} className="mb-4">
                                     <div className="flex justify-between items-baseline mb-0.5">
                                         <div className="font-bold font-serif" style={{ fontSize: '1.1em' }}>{exp.position}</div>
@@ -734,7 +790,7 @@ const Editor = () => {
                         <div style={{ marginBottom: `${sectionSpacing}rem` }}>
                             <h3 className="section-header">PROJECTS</h3>
                             <div className="space-y-3">
-                                {resume.projects.map((proj, i) => (
+                                {resume.projects.filter(proj => !proj.hidden).map((proj, i) => (
                                     <div key={i}>
                                         <div className="flex items-baseline mb-0.5">
                                             <span className="font-bold font-serif mr-2" style={{ fontSize: '1em' }}>{proj.name}</span>
@@ -751,10 +807,10 @@ const Editor = () => {
                     )}
 
                     {/* Responsibilities */}
-                    {resume.responsibilities?.length > 0 && (
+                    {resume.responsibilities?.filter(resp => !resp.hidden).length > 0 && (
                         <div style={{ marginBottom: `${sectionSpacing}rem` }}>
                             <h3 className="section-header">Positions of Responsibility</h3>
-                            {resume.responsibilities.map((resp, i) => (
+                            {resume.responsibilities.filter(resp => !resp.hidden).map((resp, i) => (
                                 <div key={i} className="mb-3">
                                     <div className="flex justify-between items-baseline mb-0.5">
                                         <div className="font-bold font-serif" style={{ fontSize: '1.05em' }}>{resp.role}</div>
@@ -768,11 +824,11 @@ const Editor = () => {
                     )}
 
                     {/* Achievements */}
-                    {resume.achievements?.length > 0 && (
+                    {resume.achievements?.filter(ach => !ach.hidden).length > 0 && (
                         <div style={{ marginBottom: `${sectionSpacing}rem` }}>
                             <h3 className="section-header">ACHIEVEMENTS</h3>
                             <ul className="list-disc ml-4 space-y-1 font-serif marker:text-black" style={{ fontSize: '0.95em' }}>
-                                {resume.achievements.map((ach, i) => (
+                                {resume.achievements.filter(ach => !ach.hidden).map((ach, i) => (
                                     <li key={i} className="pl-0">
                                         <span className="font-bold">{ach.title}</span> {ach.date && <span>({ach.date})</span>}
                                         {ach.description && <span className="ml-1 text-gray-700">| {ach.description}</span>}
